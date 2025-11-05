@@ -13,5 +13,3 @@ Usage:
 - Enter text in the controls area and click 'Visualize Both' (or Huffman Only / LZW Only)
 - Huffman panel shows an animated tree (Prev/Next to step through merges)
 - LZW panel shows step-by-step dictionary growth and outputs
-
-This project was auto-generated. You can further polish styles, add autoplay and smoother transitions.
