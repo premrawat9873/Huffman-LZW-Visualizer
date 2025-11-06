@@ -7,11 +7,16 @@ import { getLZWCompressedSize, lzwEncodeSteps } from './utils/lzw';
 
 export default function App() {
   const [text, setText] = useState('AAABBACCBAADADDAABCBBCCBAAAD');
+
+  // Huffman state
   const [huffmanRoot, setHuffmanRoot] = useState(null);
   const [huffmanFreqMap, setHuffmanFreqMap] = useState(new Map());
   const [huffmanSteps, setHuffmanSteps] = useState([]);
+
+  // LZW state
   const [lzwSteps, setLZWSteps] = useState([]);
 
+  // Compression stats
   const [originalSize, setOriginalSize] = useState(0);
   const [huffmanSize, setHuffmanSize] = useState(0);
   const [lzwSize, setLZWSize] = useState(0);
@@ -42,13 +47,15 @@ export default function App() {
       setOriginalSize(origSize);
       setHuffmanSize(huffSize);
       setLZWSize(lzwCompSize);
+
       setHuffmanReduction(((origSize - huffSize) / origSize * 100).toFixed(2));
-      setLzwReduction(((origSize - lzwCompSize) / origSize * 100).toFixed(2));
+      setLZWReduction(((origSize - lzwCompSize) / origSize * 100).toFixed(2));
     };
 
     const onRunHuffman = (e) => {
       const inputText = e.detail?.text || '';
       setText(inputText);
+
       const freqMap = buildFrequencyMap(inputText);
       const { steps, root } = buildHuffmanSteps(inputText);
       setHuffmanSteps(steps);
@@ -57,24 +64,29 @@ export default function App() {
 
       const origSize = inputText.length * 8;
       const huffSize = getHuffmanCompressedSize(root, freqMap);
+
       setOriginalSize(origSize);
       setHuffmanSize(huffSize);
       setHuffmanReduction(((origSize - huffSize) / origSize * 100).toFixed(2));
+
       setLZWSize(0);
-      setLzwReduction(0);
+      setLZWReduction(0);
     };
 
     const onRunLZW = (e) => {
       const inputText = e.detail?.text || '';
       setText(inputText);
+
       const lzwStepArr = lzwEncodeSteps(inputText);
       setLZWSteps(lzwStepArr);
 
       const origSize = inputText.length * 8;
       const lzwCompSize = getLZWCompressedSize(lzwStepArr);
+
       setOriginalSize(origSize);
       setLZWSize(lzwCompSize);
-      setLzwReduction(((origSize - lzwCompSize) / origSize * 100).toFixed(2));
+      setLZWReduction(((origSize - lzwCompSize) / origSize * 100).toFixed(2));
+
       setHuffmanSize(0);
       setHuffmanReduction(0);
     };
@@ -107,11 +119,11 @@ export default function App() {
       <div className="grid">
         <div className="card">
           <div className="panel-title">Huffman Tree Visualization</div>
-          <HuffmanVisualizer />
+          <HuffmanVisualizer steps={huffmanSteps} />
         </div>
         <div className="card">
           <div className="panel-title">LZW Dictionary & Steps</div>
-          <LZWVisualizer />
+          <LZWVisualizer steps={lzwSteps} />
         </div>
       </div>
 
