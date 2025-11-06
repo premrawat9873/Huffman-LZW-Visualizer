@@ -1,22 +1,26 @@
-export function getLZWCompressedSize(steps){
-  if(!steps || steps.length===0) return 0;
-  const lastStep = steps[steps.length-1];
+// ----- LZW COMPRESSED SIZE -----
+export function getLZWCompressedSize(data) {
+  if (!data || !data.steps || data.steps.length === 0) return 0;
+
+  const lastStep = data.steps[data.steps.length - 1];
   const output = lastStep.output || [];
-  // Number of bits per code (use minimal bits to represent largest code)
+
+  if (!output.length) return 0;
+
   const maxCode = Math.max(...output);
-  const bitsPerCode = Math.ceil(Math.log2(maxCode + 1));
+  const bitsPerCode = Math.max(8, Math.ceil(Math.log2(maxCode + 1)));
   return output.length * bitsPerCode;
 }
 
 
+// ----- LZW ENCODING WITH STEP TRACKING + FINAL DICTIONARY -----
 export function lzwEncodeSteps(input) {
-  if (!input || input.length === 0) return [];
+  if (!input || input.length === 0) return { steps: [], finalDictionary: [] };
 
   let dict = new Map();
-  let dictNextCode = 127; // start after visible ASCII range (32–126)
+  let nextCode = 256;
 
-  // Initialize dictionary with printable ASCII only
-  for (let i = 32; i < 127; i++) {
+  for (let i = 0; i < 256; i++) {
     dict.set(String.fromCharCode(i), i);
   }
 
@@ -29,77 +33,54 @@ export function lzwEncodeSteps(input) {
     const wc = w + c;
 
     if (dict.has(wc)) {
-      // If combination already in dictionary, keep extending
       w = wc;
     } else {
-      // Output code for w
       output.push(dict.get(w));
+      dict.set(wc, nextCode++);
 
-      // Add new sequence to dictionary
-      dict.set(wc, dictNextCode++);
-
-      // Record visualization step
-      const snapshot = {
+      steps.push({
         step: steps.length + 1,
+        w,
         current: c,
-        output: [...output],
         added: wc,
         addedCode: dict.get(wc),
-        w,
-        dictionary: Array.from(dict.entries()), // show full dictionary now
-        remaining: input.slice(i + 1),
-      };
+        output: [...output],
+        dictionary: Array.from(dict.entries()),
+        remaining: input.slice(i + 1)
+      });
 
-      steps.push(snapshot);
       w = c;
     }
   }
 
-  // Flush last code
   if (w !== "") {
     output.push(dict.get(w));
     steps.push({
       step: steps.length + 1,
+      w,
       current: null,
-      output: [...output],
       added: null,
       addedCode: null,
-      w,
+      output: [...output],
       dictionary: Array.from(dict.entries()),
-      remaining: "",
+      remaining: ""
     });
   }
 
-  return steps;
+  return {
+    steps,
+    finalDictionary: Array.from(dict.entries())
+  };
 }
 
-// Add this function to calculate compression ratio
-function calculateCompressionRatio(originalText, encodedBits) {
-    const originalBits = originalText.length * 8; // ASCII characters use 8 bits
-    const compressionRatio = ((originalBits - encodedBits) / originalBits) * 100;
-    return compressionRatio.toFixed(2);
-}
 
-// Modify the existing compress function
-function compress() {
-    const inputText = document.getElementById('input').value;
-    if (!inputText) {
-        alert('Please enter some text');
-        return;
-    }
+// ----- EXPAND FINAL OUTPUT TO VALUE TABLE -----
+export function expandLZWOutput(output, finalDict) {
+  const dict = new Map();
+  finalDict.forEach(([str, code]) => dict.set(code, str));
 
-    // ...existing code for Huffman encoding...
-
-    const originalSize = inputText.length * 8;
-    const compressedSize = encoded.length;
-    const ratio = calculateCompressionRatio(inputText, compressedSize);
-
-    // Add this to display compression statistics
-    document.getElementById('compressionStats').innerHTML = `
-        <div class="stats-container">
-            <p>Original size: ${originalSize} bits</p>
-            <p>Compressed size: ${compressedSize} bits</p>
-            <p>Compression ratio: ${ratio}%</p>
-        </div>
-    `;
+  return output.map(code => ({
+    code,
+    value: dict.get(code)
+  }));
 }
