@@ -1,5 +1,13 @@
-// LZW Encoding Step Generator for Visualization
-// Tracks dictionary growth, current input, and output codes (clean + readable version)
+export function getLZWCompressedSize(steps){
+  if(!steps || steps.length===0) return 0;
+  const lastStep = steps[steps.length-1];
+  const output = lastStep.output || [];
+  // Number of bits per code (use minimal bits to represent largest code)
+  const maxCode = Math.max(...output);
+  const bitsPerCode = Math.ceil(Math.log2(maxCode + 1));
+  return output.length * bitsPerCode;
+}
+
 
 export function lzwEncodeSteps(input) {
   if (!input || input.length === 0) return [];
@@ -63,4 +71,35 @@ export function lzwEncodeSteps(input) {
   }
 
   return steps;
+}
+
+// Add this function to calculate compression ratio
+function calculateCompressionRatio(originalText, encodedBits) {
+    const originalBits = originalText.length * 8; // ASCII characters use 8 bits
+    const compressionRatio = ((originalBits - encodedBits) / originalBits) * 100;
+    return compressionRatio.toFixed(2);
+}
+
+// Modify the existing compress function
+function compress() {
+    const inputText = document.getElementById('input').value;
+    if (!inputText) {
+        alert('Please enter some text');
+        return;
+    }
+
+    // ...existing code for Huffman encoding...
+
+    const originalSize = inputText.length * 8;
+    const compressedSize = encoded.length;
+    const ratio = calculateCompressionRatio(inputText, compressedSize);
+
+    // Add this to display compression statistics
+    document.getElementById('compressionStats').innerHTML = `
+        <div class="stats-container">
+            <p>Original size: ${originalSize} bits</p>
+            <p>Compressed size: ${compressedSize} bits</p>
+            <p>Compression ratio: ${ratio}%</p>
+        </div>
+    `;
 }

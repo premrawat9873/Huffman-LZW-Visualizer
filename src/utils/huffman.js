@@ -15,6 +15,15 @@ export function buildFrequencyMap(s){
   }
   return m;
 }
+export function getHuffmanCompressedSize(root, freqMap){
+  if(!root) return 0;
+  const codes = genCodes(root);
+  let size = 0;
+  for(const [ch, f] of freqMap.entries()){
+    size += f * codes[ch].length;
+  }
+  return size;
+}
 
 // returns {steps, root}
 // steps: array of snapshots; each snapshot: {nodes:Array(nodeSummary), description, merged:[aId,bId], mergedNodeId}
