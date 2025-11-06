@@ -128,7 +128,7 @@ export default function App() {
       </div>
 
       <div className="card compression-stats">
-        <h4>Compression Comparison</h4>
+        <h4>Compression</h4>
         <p>Original size: {originalSize} bits</p>
         {huffmanSize > 0 && (
           <p>
