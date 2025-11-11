@@ -48,6 +48,14 @@ export default function App() {
   return (
     <div className="app">
 
+      <div className="header">
+        <div>
+          <div className="subtitle">DAA Project</div>
+          <div className="title">Data Elegance in Bits — Huffman &amp; LZW Visualizer</div>
+
+        </div>
+      </div>
+
       <Controls />
 
       <div className="grid">
@@ -58,7 +66,7 @@ export default function App() {
 
         <div className="card">
           <div className="panel-title">LZW Dictionary & Steps</div>
-          <LZWVisualizer />
+          <LZWVisualizer steps={lzwSteps} />
         </div>
       </div>
 
