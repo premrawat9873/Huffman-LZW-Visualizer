@@ -73,6 +73,7 @@ export default function App() {
         Created by:
         <br /> Prem Rawat (23BCS10659)
         <br /> Devika (23BCS11644)
+        <br /> Shikha Upadhyay (23BCS13021)
       </div>
     </div>
   );
