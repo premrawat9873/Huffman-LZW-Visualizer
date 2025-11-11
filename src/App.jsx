@@ -52,7 +52,6 @@ export default function App() {
         <div>
           <div className="subtitle">DAA Project</div>
           <div className="title">Data Elegance in Bits — Huffman &amp; LZW Visualizer</div>
-
         </div>
       </div>
 
@@ -82,6 +81,17 @@ export default function App() {
         <br /> Prem Rawat (23BCS10659)
         <br /> Devika (23BCS11644)
         <br /> Shikha Upadhyay (23BCS13021)
+
+        <br /><br />
+
+        <a
+          href="https://github.com/premrawat9873/Huffman-LZW-Visualizer"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="gh-button"
+        >
+          View on GitHub
+        </a>
       </div>
     </div>
   );
